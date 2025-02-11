@@ -1,0 +1,23 @@
+{
+  "name": "nuxt-todolist",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.13.6",
+    "axios": "^0.27.2",
+    "bootstrap": "^5.3.3",
+    "bootstrap-vue": "^2.23.1",
+    "jquery": "^3.7.1",
+    "nuxt": "^2.18.1",
+    "vue": "^2.7.16",
+    "vue-router": "^3.6.5",
+    "vue-toastification": "^1.7.14"
+  }
+}
