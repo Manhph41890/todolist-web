@@ -1,356 +1,319 @@
 <template>
-  <div class="row p-4">
-    <div class="col-md-4">
-      <div class="card shadow-sm rounded-3">
-        <div class="card-body">
-          <h4 class="card-title text-center p-3 text-primary">
-            <strong>New Task</strong>
-          </h4>
-          <form @submit.prevent="addTask">
-            <div class="mb-3">
-              <label for="title" class="form-label">Title
-                <span class="text-danger">*</span>
-              </label>
-              <input type="text" v-model="newTask.title" id="title" class="form-control" placeholder="Title" required>
-            </div>
-            <div class="mb-3">
-              <label for="description" class="form-label">Description
-                <span class="text-danger">*</span>
-              </label>
-              <textarea v-model="newTask.description" id="description" class="form-control" rows="3"
-                placeholder="Description" required></textarea>
-            </div>
-            <div class="d-flex justify-content-between align-content-between">
-              <div class="mb-3 me-1" style="width: 200px;">
-                <label for="due-date" class="form-label">Due Date
-                  <span class="text-danger">*</span>
-                </label>
-                <input type="date" v-model="newTask.due_date" id="due-date" class="form-control" required>
-              </div>
-              <div class="mb-3 ms-1">
-                <label for="priority" class="form-label">Priority</label>
-                <select v-model="newTask.priority" id="priority" class="form-select" style="width: 200px;">
-                  <option value="normal">Normal</option>
-                  <option value="high">High</option>
-                  <option value="low">Low</option>
-                </select>
-              </div>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Add</button>
-          </form>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-8">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-content-between">
-            <h3 class="card-title p-3 text-primary">
-              <strong>Todo list</strong>
-            </h3>
-            <div class="input-group" style="width: 30%;">
-              <form class="form-control d-flex align-items-center"
-                style="height: 40px; padding: 0;border: 1px solid #0d6efd; border-radius: 8px;"
-                @submit.prevent="searchTasks">
-                <input type="text" class="form-control border-0" placeholder="keyword"
-                  style="box-shadow: none; height: 100%; font-size: 14px; padding: 0 10px;" v-model="searchKeyword">
-                <button class="btn bg-transparent border-0" type="submit" style="height: 100%; padding: 0 10px;">
-                  <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" height="1.2em"
-                    width="1.2em" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z">
-                    </path>
-                  </svg>
-                </button>
-              </form>
-            </div>
-          </div>
-          <div class="list">
-            <section class="rounded-3" style="border: 1px solid rgb(230, 228, 228);">
-              <!-- <div v-for="task in todo" :key="task.id" class="p-2"> -->
-              <div v-for="(task, index) in todo" :key="task.id" class="p-2">
-                <div
-                  class="list-group-item d-flex align-items-center justify-content-between bg-light pt pe-2 ps-2 rounded-2 pt-2 pb-2">
-                  <div class="d-flex align-items-center justify-content-center">
-                    <input class="form-check-input me-3" type="checkbox">
-                    <span class="badge me-2 pe-3 ps-3 text-white" :class="{
-                      'bg-secondary': task.priority === 'normal',
-                      'bg-warning': task.priority === 'high',
-                      'bg-success': task.priority === 'low'
-                    }">
-                      {{ task.priority }}
-                    </span>
-                    {{ task.title }}
-                  </div>
-                  <div class="">
-                    <button class="btn btn-light" @click="deleteTask(task.id)">
-                      <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" height="1em"
-                        width="1em" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
-                        </path>
-                      </svg>
-                    </button>
-                    <button class="btn btn-light" @click="editTask(index)">
-                      <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" height="1em"
-                        width="1em" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
-                        <path
-                          d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z">
-                        </path>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-                <transition name="slide-fade">
-                  <div v-show="editingIndex === index" class="">
-                    <form @submit.prevent="updateTask">
-                      <div class="mb-3">
-                        <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
-                        <input type="text" v-model="editingTask.title" id="title" class="form-control"
-                          placeholder="Title" required>
+  <div id="container">
+      <div class="overlay">
+          <Navbar />
+          <div class="container-fluid py-3">
+              <h4 class="text-white board-title mb-3">{{ boardTitle }}</h4>
+              <div class="board-lists d-flex flex-nowrap align-items-start">
+                  <div v-for="(title, index) in task" :key="index" class="trello-list">
+                      <div class="d-flex justify-content-between align-items-center">
+                          <h6>{{ title.title }}</h6>
+                          <DropdownMenu :taskId="title.id" @delete="deleteTitle" />
                       </div>
-                      <div class="mb-3">
-                        <label for="description" class="form-label">Description <span
-                            class="text-danger">*</span></label>
-                        <textarea v-model="editingTask.description" id="description" class="form-control" rows="3"
-                          placeholder="Description" required></textarea>
-                      </div>
-                      <div class="d-flex justify-content-between align-content-between">
-                        <div class="mb-3 me-1" style="width: 400px;">
-                          <label for="due-date" class="form-label">Due Date <span class="text-danger">*</span></label>
-                          <input type="date" v-model="editingTask.due_date" id="due-date" class="form-control" required>
-                        </div>
-                        <div class="mb-3 ms-1">
-                          <label for="priority" class="form-label">Priority</label>
-                          <select v-model="editingTask.priority" id="priority" class="form-select"
-                            style="width: 400px;">
-                            <option value="normal">Normal</option>
-                            <option value="high">High</option>
-                            <option value="low">Low</option>
-                          </select>
-                        </div>
-                      </div>
-                      <button type="submit" class="btn btn-primary w-100">Update</button>
-                      <button type="button" class="btn btn-secondary w-100 mt-2"
-                        @click="cancelEdit(index)">Cancel</button>
-                    </form>
-                  </div>
-                </transition>
+                      <div class="trello-card" v-for="(todo, i) in title.todolists" :key="i">
 
-              </div>
-            </section>
-          </div>
-          <div class="d-flex justify-content-between p-4 bg-light rounded-3 mt-3">
-            <div class="mt-2">
-              <span>Bluk Action</span>
-            </div>
-            <div class="sc-iCfMLu hPTJGL">
-              <button class="btn btn-primary me-3">
-                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" height="1em"
-                  width="1em" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7zm-4.208 7-.896-.897.707-.707.543.543 6.646-6.647a.5.5 0 0 1 .708.708l-7 7a.5.5 0 0 1-.708 0z">
-                  </path>
-                  <path d="m5.354 7.146.896.897-.707.707-.897-.896a.5.5 0 1 1 .708-.708z"></path>
-                </svg>Done</button>
+                          <a class="d-flex justify-content-between align-items-center mb-1 btn"
+                              @click="isModalOpen = true; selectedTodo = todo" style="cursor: pointer;">
+                              <span>{{ todo.title }}</span>
+                          </a>
+                          <span class=" trello-label" style="min-width: 5px;"></span>
 
-              <button class="btn btn-outline-primary">
-                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" height="1em"
-                  width="1em" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
-                  </path>
-                </svg>Remove</button>
-            </div>
+                      </div>
+                      <TodolistModal :todo="selectedTodo" :showModal="isModalOpen" @close="isModalOpen = false" />
+
+                      <AddTodo :titleId="title.id" @taskAdded="fetchTitle" />
+
+                  </div>
+                  <div class="trello-list d-flex align-items-center justify-content-center"
+                      style="background-color: rgba(255, 255, 255, 0.4)">
+                      <div v-if="!isAddingList">
+                          <button class="add-list-btn" @click="isAddingList = true">
+                              <i class="bi bi-plus-lg"></i> Thêm danh sách khác
+                          </button>
+                      </div>
+
+                      <div v-else class="add-list-form">
+                          <input type="text" class="form-control mb-2" v-model="newTitle.title"
+                              placeholder="Nhập tiêu đề danh sách" />
+                          <div class="d-flex">
+                              <button class="btn btn-primary btn-sm me-2" @click="addTitle">Thêm danh
+                                  sách</button>
+                              <button class="btn btn-sm" @click="cancelAddList"><i class="bi bi-x-lg"></i>
+                              </button>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
           </div>
-        </div>
       </div>
-    </div>
   </div>
+
 </template>
 
 <script>
+import Navbar from '@/components/Navbar.vue';
+import AddTodo from '@/components/AddTodo.vue';
+import TodolistModal from '@/components/TodolistModal.vue';
+import DropdownMenu from '@/components/DropdownMenu.vue';
+
 export default {
+  components: { Navbar, DropdownMenu, AddTodo, TodolistModal },
+  props: {
+      todo: Object, // Nhận danh sách thẻ từ component cha
+      showModal: Boolean,
+  },
   data() {
-    return {
-      todo: [],
-      editingIndex: -1,
-      editingTask: {},
-      searchKeyword: '',
-      newTask: {
-        title: '',
-        description: '',
-        due_date: null,
-        priority: 'normal'
-      },
-    }
+      return {
+          isModalOpen: false,
+          selectedTodo: null,
+          boardTitle: "Trello ",
+          isAddingList: false,
+          task: [],
+          newTitle: {
+              title: '',
+          },
+          errors: {},
+      };
   },
   mounted() {
-    this.fetchTasks()
-    console.log('Component mounted.', this.$axios.todolists);
+      this.fetchTitle()
+      console.log('Component mounted.', this.$axios.titletasks);
   },
   methods: {
-    async fetchTasks() {
-      try {
-        const response = await this.$axios.todolists.getList();
-        console.log('API Response (Fetch):', response);
+      async fetchTitle() {
+          try {
+              const response = await this.$axios.titletasks.getList();
+              console.log('API Response (Fetch):', response);
 
-        // Kiểm tra cấu trúc response
-        if (response.status === 'success' && response.data && Array.isArray(response.data)) {
-          this.todo = response.data; // Gán dữ liệu vào this.todo
-        } else {
-          throw new Error('Định dạng response không hợp lệ');
-        }
-      } catch (error) {
-        console.error('Lỗi khi tải tasks:', error);
-        this.$toast.error(`Lỗi khi tải tasks: ${error.message}`);
-      }
-    },
-    async addTask() {
-      try {
-        const response = await this.$axios.todolists.create(this.newTask);
-        console.log('📥 Response sau khi thêm:', response.message);
-        if (response.message === 'Created successfully') {
-          this.$toast.success('Thêm task thành công');
-          this.newTask = {
-            title: '',
-            description: '',
-            due_date: null,
-            priority: 'normal',
-          };
-          await this.fetchTasks();
-        } else {
-          console.error('⚠️ API trả về dữ liệu không mong muốn:', response);
-        }
-      } catch (error) {
-        console.error('❌ Lỗi khi thêm task:', error);
-      }
-    },
-
-    async deleteTask(id) {
-      try {
-        const response = await this.$axios.todolists.delete(id);
-        console.log('Response sau khi xóa:', response);
-        console.log('Failed to delete task', response.message);
-        if (response.message === 'Deleted successfully') {
-          this.$toast.success(`Xóa task #${id} thành công!`, {
-            timeout: 3000,
-            position: 'top-right',
-          });
-          await this.fetchTasks();
-        } else {
-          console.error(response.message);
-        }
-      } catch (error) {
-        console.error('Failed to delete task', error);
-      }
-    },
-
-    editTask(index) {
-      console.log('Edit task:', index);
-      if (this.editingIndex === index) {
-        // Nếu đang chỉnh sửa task hiện tại, tắt form
-        this.editingIndex = -1;
-        this.editingTask = {};
-      } else {
-        // Nếu không, mở form chỉnh sửa
-        if (this.todo && this.todo[index]) {
-          this.editingIndex = index;
-          this.editingTask = { ...this.todo[index] };
-        } else {
-          console.error('Không tìm thấy task để chỉnh sửa');
-          this.$toast.error('Không tìm thấy task để chỉnh sửa');
-        }
-      }
-    },
-
-    async updateTask() {
-      try {
-        const response = await this.$axios.todolists.update(
-          this.editingTask.id,  // ID của task
-          this.editingTask      // Dữ liệu cập nhật
-        );
-
-        console.log(' Response cập nhật:', response.message);
-
-        if (response.message === 'Updated successfully') {
-          this.$toast.success('Cập nhật task thành công!');
-          this.editingIndex = -1;
-          await this.fetchTasks();
-        } else {
-          this.$toast.error('Cập nhật thất bại: ' + (response.message || 'Lỗi không xác định'));
-        }
-      } catch (error) {
-        console.error(' Lỗi khi cập nhật:', error);
-        this.$toast.error(' Lỗi hệ thống: ' + error.message);
-      }
-    },
-
-    async searchTasks() {
-      console.log('Search keyword:', this.searchKeyword);
-      try {
-        const params = {
-          search: this.searchKeyword.trim(), // Thêm tham số search
-          limit: 50 // Giới hạn số lượng kết quả
-        };
-
-        const response = await this.$axios.todolists.getList(params);
-
-        if (response.status === 'success') {
-          this.todo = response.data;
-
-          // Hiển thị thông báo nếu không có kết quả
-          if (this.todo.length === 0) {
-            this.$toast.info('Không tìm thấy kết quả phù hợp');
+              // Kiểm tra cấu trúc response
+              if (response.status === 'success' && response.data && Array.isArray(response.data)) {
+                  this.task = response.data; // Gán dữ liệu vào this.todo
+              } else {
+                  throw new Error('Định dạng response không hợp lệ');
+              }
+          } catch (error) {
+              console.error('Lỗi khi tải tasks:', error);
+              this.$toast.error(`Lỗi khi tải tasks: ${error.message}`);
           }
-        } else {
-          throw new Error(response.message || 'Lỗi định dạng response');
-        }
-      } catch (error) {
-        console.error('Lỗi tìm kiếm:', error);
-        this.$toast.error(`Lỗi tìm kiếm: ${error.message}`);
-      }
-    },
+      },
+      async addTitle() {
+          try {
+              const response = await this.$axios.titletasks.create(this.newTitle);
+              console.log('API Response (Add):', response);
+              if (response.message === 'Created successfully') {
+                  this.$toast.success('Thêm task thành công');
+                  this.newTitle = {
+                      title: '',
+                  };
+                  await this.fetchTitle();
+              } else {
+                  console.error('⚠️ API trả về dữ liệu không mong muốn:', response);
+              }
+          } catch (error) {
+              console.error('❌ Lỗi khi thêm task:', error);
+          }
+      },
+      cancelAddList() {
+          this.isAddingList = false;
+          this.newTitle.title = '';
+      },
+      async deleteTitle(id) {
+          try {
+              const response = await this.$axios.titletasks.delete(id);
+              console.log('Response sau khi xóa:', response);
+              if (response.message === 'Deleted successfully') {
+                  this.$toast.success('Xóa task thành công');
+                  await this.fetchTitle();
+              } else {
+                  console.error('���️ API trả về dữ liệu không mong muốn:', response);
+              }
+          } catch (error) {
+              console.error('�� L��i khi xóa task:', error);
+          }
+      },
+      closeModal() {
+          this.$emit('close');
+          console.log("nhan dong task");
+      },
 
-    cancelEdit() {
-      this.editingIndex = -1;
-      this.editingTask = {};
-    },
-  },
-}
+  }
+};
 </script>
 
-<style scoped>
-.row {
-  background-color: rgb(152, 193, 217);
+<style>
+/* 1. Đặt ảnh nền toàn trang */
+#container {
+  background: url("https://mega.com.vn/media/news/2707_phong-nen-lich-su-dep-lam-slide7.jpg") center center;
+  background-size: cover;
 }
 
-.list {
-  max-height: 400px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #0d6efd #f0f0f0;
+/* 2. Overlay giúp chữ đọc rõ hơn */
+.overlay {
+  min-height: 100vh;
 }
 
-.list::-webkit-scrollbar {
-  width: 8px;
+/* 3. Navbar tuỳ chỉnh */
+.navbar-custom {
+  background-color: rgba(0, 0, 0, 0.7) !important;
 }
 
-.list::-webkit-scrollbar-thumb {
-  background-color: #0d6efd;
-  /* Màu thanh cuộn */
-  border-radius: 10px;
-  /* Bo góc thanh cuộn */
+.add-card-form {
+  background: #ebecf0;
+  padding: 8px;
+  border-radius: 4px;
+  margin-top: 8px;
 }
 
-.list::-webkit-scrollbar-track {
-  background: #f0f0f0;
-  /* Màu nền của track */
-  border-radius: 10px;
+.add-card-btn {
+  background: none;
+  border: none;
+  color: #5e6c84;
+  width: 100%;
+  text-align: left;
+  padding: 8px;
 }
 
-section {
-  min-height: 400px;
+.add-card-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* 4. Tiêu đề bảng */
+.board-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.trello-card span {
+  word-wrap: break-word;
+  /* Đảm bảo chữ không tràn ra ngoài */
+  white-space: normal;
+  /* Cho phép chữ xuống dòng */
+  overflow-wrap: break-word;
+  /* Đảm bảo xuống dòng khi cần */
+  display: block;
+  /* Để text tự động chiếm toàn bộ width */
+  max-width: 100%;
+  /* Giới hạn độ rộng để không tràn */
+}
+
+/* 5. Khu vực hiển thị các danh sách */
+.board-lists {
+  overflow-x: auto;
+  white-space: nowrap;
+  /* Giữ các danh sách trên một dòng */
+  scrollbar-width: none;
+  /* Ẩn thanh cuộn trên Firefox */
+  -ms-overflow-style: none;
+  /* Ẩn thanh cuộn trên IE/Edge */
+}
+
+.board-lists::-webkit-scrollbar {
+  display: none;
+  /* Ẩn thanh cuộn trên Chrome, Safari */
+}
+
+
+/* 6. Mỗi cột (list) Trello */
+.trello-list {
+  display: inline-block;
+  /* để xếp ngang */
+  vertical-align: top;
+  min-width: 272px;
+  background-color: #ebecf0;
+  border-radius: 6px;
+  margin-right: 12px;
+  padding: 8px;
+}
+
+/* Tiêu đề cột */
+.trello-list h6 {
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* 7. Card (thẻ) Trello */
+.trello-card {
+  background-color: #ffffff;
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(9, 30, 66, 0.25);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.trello-card:hover {
+  background-color: #f4f5f7;
+}
+
+/* Label nho nhỏ bên trong card (dạng badge) */
+.trello-label {
+  display: inline-block;
+  font-size: 0.75rem;
+  color: #fff;
+  background-color: #5aac44;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-right: 4px;
+}
+
+/* 8. Nút + Thêm thẻ / + Thêm danh sách */
+.add-card-btn,
+.add-list-btn {
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  text-align: left;
+  color: #5e6c84;
+  padding: 6px 8px;
+  margin-bottom: 0;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.add-card-btn:hover,
+.add-list-btn:hover {
+  background-color: #dadce0;
+  color: #172b4d;
+}
+
+/* Form thêm card ẩn mặc định */
+.add-card-form {
+  background-color: #ffffff;
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 8px;
+  display: none;
+}
+
+/* 9. Thanh cuộn */
+.board-lists::-webkit-scrollbar {
+  height: 8px;
+}
+
+.board-lists::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.board-lists::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+/* 10. Responsive: ẩn text navbar khi màn hình nhỏ để gọn */
+@media (max-width: 576px) {
+  .navbar-nav .nav-link span {
+      display: none;
+  }
+
+  .navbar-brand {
+      font-size: 0.9rem;
+  }
+
+  .board-title {
+      font-size: 1rem;
+  }
 }
 </style>
